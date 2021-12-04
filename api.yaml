@@ -75,10 +75,16 @@ paths:
       consumes:
         - application/json
       parameters:
-        - in: formData
+        - in: body
           name: userId
           required: true
-          type: string
+          schema:
+            type: object
+            required:
+              - userId
+            properties:
+              userId:
+                type: string
       responses:
         200:
           $ref: '#/responses/OnGetUserInfo'
@@ -100,10 +106,16 @@ paths:
       consumes:
         - application/json
       parameters:
-        - in: formData
+        - in: body
           name: deviceId
           required: true
-          type: string
+          schema:
+            type: object
+            required:
+              - deviceId
+            properties:
+              deviceId:
+                type: string
       responses:
         200:
           $ref: '#/responses/OnGetDeviceInfo'
@@ -124,16 +136,13 @@ paths:
       consumes:
         - application/json
       parameters:
-        - in: formData
-          name: userId
-          required: true
-          type: string
 
         - in: body
           name: device
           required: true
           schema:
-            $ref: '#/definitions/Device'
+            $ref: '#/definitions/DeviceCreateRequest'
+
       responses:
         200:
           $ref: '#/responses/OnCreateDevice'
@@ -333,20 +342,71 @@ definitions:
   DeviceInfor:
     type: object
     properties:
-        success:
-          type: boolean
-        _id:
-          type: string
+      success:
+        type: boolean
+      _id:
+        type: string
 
-        deviceName:
+      deviceName:
+        type: string
+      connectState:
+        type: string
+      location:
+        type: string
+      creatorId:
+        type: string
+      stateHistory:
+        type: array
+        items:
+          type: object
+          properties:
+            _id:
+              type: string
+            at:
+              type: object
+              properties:
+                type:
+                  type: string
+                default:
+                  type: string
+                  format: date
+            template:
+              type: number
+            humidity:
+              type: number
+            actorState:
+              type: string
+
+
+  DeviceCreateResponse:
+    type: object
+    properties:
+      deviceId:
+        type: string
+      location:
+        type: string
+      deviceName:
+        type: string
+      connectState:
+        type: string
+  DeviceCreateRequest:
+    type: object
+    properties:
+
+      userId:
+        type: string
+      _id:
+        type: string
+
+      deviceName:
           type: string
-        connectState:
+      connectState:
           type: string
-        location:
+      location:
           type: string
-        creatorId:
+      creatorId:
           type: string
-        stateHistory:
+      stateHistory:
           type: array
           items:
             type: object
@@ -368,18 +428,42 @@ definitions:
               actorState:
                 type: string
 
+      actionHistory:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              from:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  enum:
+                    type: string
+                    enum: [ "user", "device" ]
+              action:
+                type: object
+                properties:
+                  type:
+                    type: string
 
-  DeviceCreate:
-    type: object
-    properties:
-      deviceId:
-        type: string
-      location:
-        type: string
-      deviceName:
-        type: string
-      connectState:
-        type: string
+                  default:
+                    type: string
+
+                  enum:
+                    type: string
+                    enum: [ "ON", "OFF" ]
+              keepTo:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    format: date
+                  default:
+                    type: string
+                    format: date
 
 
 
@@ -416,7 +500,7 @@ responses:
   OnCreateDevice:
     description: "create device"
     schema:
-      $ref: '#/definitions/DeviceCreate'
+      $ref: '#/definitions/DeviceCreateResponse'
 
   OK:
     description: '200: OK'
