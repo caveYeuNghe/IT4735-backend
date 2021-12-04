@@ -1,0 +1,441 @@
+swagger: '2.0'
+info:
+  description: The document of IoT project
+  version: 1.0.0
+  title: IoT REST APIs
+  contact:
+    name: Dat Pham
+    email: phamducdat2402@gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+host: 'localhost:8080'
+
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: accepts web
+      operationId: Login
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: authRequest
+          required: true
+          schema:
+            $ref: "#/definitions/UserLoginRequest"
+      responses:
+        200:
+          $ref: '#/responses/UserLoginResponse'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+  /auth/signup:
+    post:
+      tags:
+        - Auth
+      summary: sign up web
+      operationId: Signup
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: authRequest
+          required: true
+          schema:
+            $ref: "#/definitions/UserSignUpRequest"
+      responses:
+        200:
+          $ref: '#/responses/UserSignUpResponse'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+
+  /user/onGetUserInfo:
+    post:
+      tags:
+        - User
+      summary: getUserInfo web
+      operationId: getUserInfo
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: formData
+          name: userId
+          required: true
+          type: string
+      responses:
+        200:
+          $ref: '#/responses/OnGetUserInfo'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+
+  /device/onGetDeviceInfo:
+    post:
+      tags:
+        - device
+      summary: get device info
+      operationId: onGetDeviceInfo
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: formData
+          name: deviceId
+          required: true
+          type: string
+      responses:
+        200:
+          $ref: '#/responses/OnGetDeviceInfo'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+  /device/onCreateDevice:
+    post:
+      tags:
+        - device
+      summary: create device
+      operationId: onCreateDevice
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: formData
+          name: userId
+          required: true
+          type: string
+
+        - in: body
+          name: device
+          required: true
+          schema:
+            $ref: '#/definitions/Device'
+      responses:
+        200:
+          $ref: '#/responses/OnCreateDevice'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+
+
+
+
+
+
+
+definitions:
+
+  Device:
+    type: object
+    properties:
+      _id:
+        type: string
+
+      deviceName:
+        type: string
+      connectState:
+        type: string
+      location:
+        type: string
+      creatorId:
+        type: string
+      stateHistory:
+        type: array
+        items:
+          type: object
+          properties:
+            _id:
+              type: string
+            at:
+              type: object
+              properties:
+                type:
+                  type: string
+                default:
+                  type: string
+                  format: date
+            template:
+              type: number
+            humidity:
+              type: number
+            actorState:
+              type: string
+
+      actionHistory:
+        type: array
+        items:
+          type: object
+          properties:
+            _id:
+              type: string
+            from:
+              type: object
+              properties:
+                type:
+                  type: string
+                enum:
+                  type: string
+                  enum: ["user", "device"]
+            action:
+              type: object
+              properties:
+                type:
+                  type: string
+
+                default:
+                  type: string
+
+                enum:
+                  type: string
+                  enum: ["ON", "OFF"]
+            keepTo:
+              type: object
+              properties:
+                type:
+                  type: string
+                  format: date
+                default:
+                  type: string
+                  format: date
+  User:
+    type: object
+    properties:
+
+      _id:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      devices:
+        type: array
+        items:
+          type: object
+          properties:
+            _id:
+              type: string
+            deviceId:
+              type: string
+            deviceName:
+              type: string
+            location:
+              type: string
+            connectState:
+              type: string
+            added:
+              type: object
+              properties:
+                type:
+                  type: string
+                  format: date
+                default:
+                  type: string
+                  format: date
+  UserLoginRequest:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+  UserLoginResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+      userId:
+        type: string
+      username:
+        type: string
+  UserSignUpRequest:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+  UserSignUpResponse:
+    type: object
+    properties:
+      _id:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      device:
+        type: array
+        items:
+          $ref: '#/definitions/Device'
+  UserInfor:
+    type: object
+    properties:
+
+      _id:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      devices:
+        type: array
+        items:
+          type: object
+          properties:
+            _id:
+              type: string
+            deviceId:
+              type: string
+            deviceName:
+              type: string
+            location:
+              type: string
+            connectState:
+              type: string
+            added:
+              type: object
+              properties:
+                type:
+                  type: string
+                  format: date
+                default:
+                  type: string
+                  format: date
+      success:
+        type: boolean
+  DeviceInfor:
+    type: object
+    properties:
+        success:
+          type: boolean
+        _id:
+          type: string
+
+        deviceName:
+          type: string
+        connectState:
+          type: string
+        location:
+          type: string
+        creatorId:
+          type: string
+        stateHistory:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+              at:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  default:
+                    type: string
+                    format: date
+              template:
+                type: number
+              humidity:
+                type: number
+              actorState:
+                type: string
+
+
+  DeviceCreate:
+    type: object
+    properties:
+      deviceId:
+        type: string
+      location:
+        type: string
+      deviceName:
+        type: string
+      connectState:
+        type: string
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+responses:
+
+  UserLoginResponse:
+    description: "auth response"
+    schema:
+      $ref: "#/definitions/UserLoginResponse"
+  UserSignUpResponse:
+    description: "sign up response"
+    schema:
+      $ref: "#/definitions/UserSignUpResponse"
+  OnGetUserInfo:
+    description: "get user info"
+    schema:
+      $ref: '#/definitions/UserInfor'
+  OnGetDeviceInfo:
+    description: "get device info"
+    schema:
+      $ref: "#/definitions/DeviceInfor"
+  OnCreateDevice:
+    description: "create device"
+    schema:
+      $ref: '#/definitions/DeviceCreate'
+
+  OK:
+    description: '200: OK'
+  Created:
+    description: '201: Created'
+  Accepted:
+    description: '202: Accepted'
+  NoContent:
+    description: '204: NoContent'
+  BadRequest:
+    description: '400: Bad Request'
+  NoAuthorized:
+    description: '401: No Authorized'
+  Forbidden:
+    description: '403: Forbidden'
+  NotFound:
+    description: '404: Not Found'
+  InternalServerError:
+    description: '500: Internal Server Error'
+
+
+
