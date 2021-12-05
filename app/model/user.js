@@ -4,19 +4,8 @@ mongoose.connect('mongodb://localhost:27017/IoT', { useNewUrlParser: true, useUn
 
 const UserSchema = mongoose.Schema({
     _id: mongoose.Types.ObjectId,
-    username: String,
+    userName: String,
     password: String,
-    devices: [{
-        _id: false,
-        deviceId: mongoose.Types.ObjectId,
-        deviceName: String,
-        location: String,
-        connectState: String,
-        added: {
-            type: Date,
-            default: Date.now()
-        }
-    }]
 })
 
 UserSchema.statics = {

@@ -1,3 +1,5 @@
+
+
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost:27017/IoT', {useNewUrlParser: true, useUnifiedTopology: true});
 
@@ -6,7 +8,7 @@ const DeviceSchema = mongoose.Schema({
     deviceName:String,
     connectState: String,
     location: String,
-    creatorId: String,
+    userId: String,
     stateHistory: [{
         _id: false,
         at: {
@@ -35,6 +37,7 @@ const DeviceSchema = mongoose.Schema({
     }]
 })
 
+
 DeviceSchema.statics = {
     createDevice: async function (data) {
         try {
@@ -42,7 +45,7 @@ DeviceSchema.statics = {
                 _id: new mongoose.Types.ObjectId,
                 deviceName: data.deviceName,
                 connectState: 'pending',
-                creatorId: data.userId,
+                userId: data.userId,
                 location: data.location,
                 stateHistory: [],
                 actionHistory: [{

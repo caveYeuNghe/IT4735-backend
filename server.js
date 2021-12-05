@@ -11,14 +11,12 @@ const publishTopic = "nhom24Pub"
 
 const server = express().use(express.json()).use(express.urlencoded({ extended: true })).use(cors());
 
-const authRouter = require('./app/router/authRouter');
 const userRouter = require('./app/router/userRouter');
 const deviceRouter = require('./app/router/deviceRouter');
 const user = require('./app/model/user');
 
-server.use('/auth', authRouter);
-server.use('/user', userRouter);
-server.use('/device', deviceRouter);
+server.use('/users', userRouter);
+server.use('/devices', deviceRouter);
 server.use(express.static('public'));
 
 const http = require('http').createServer(server);

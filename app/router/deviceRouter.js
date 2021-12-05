@@ -5,8 +5,9 @@ const deviceController = require('../controller/deviceController');
 const Device = require('../model/device');
 const User = require('../model/user');
 
-deviceRouter.post('/getDeviceInfo', deviceController.onGetDeviceInfo);
-deviceRouter.post('/createDevice', deviceController.onCreateDevice);
+deviceRouter.get("/", deviceController.getAllDevice)
+deviceRouter.get("/:deviceId", deviceController.getDevice)
+deviceRouter.post("/", deviceController.createDevice);
 
 
 //edit sate automatic - ON OFF
