@@ -19,6 +19,13 @@ server.use('/users', userRouter);
 server.use('/devices', deviceRouter);
 server.use(express.static('public'));
 
+//connect db mongo atlas
+const url = "mongodb+srv://hanh-nh_18:123321@cluster0.iabfh.mongodb.net/IoTDB?retryWrites=true&w=majority"
+const connect = mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, });
+connect.then((db) => {
+  console.log("Connected to the database.");
+}, (err) => { console.log(err); });
+
 const http = require('http').createServer(server);
 
 mqttClient.on('connect', () => {
