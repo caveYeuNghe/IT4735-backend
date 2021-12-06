@@ -1,6 +1,6 @@
-const e = require('express')
+// const e = require('express')
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/IoT', { useNewUrlParser: true, useUnifiedTopology: true });
+// mongoose.connect('mongodb://localhost:27017/IoT', { useNewUrlParser: true, useUnifiedTopology: true });
 
 const UserSchema = mongoose.Schema({
     _id: mongoose.Types.ObjectId,
