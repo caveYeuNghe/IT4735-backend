@@ -1,7 +1,6 @@
 const Device = require('../model/device');
 const User = require('../model/user')
 var mongoose = require('mongoose');
-const {createdevice} = require("../model/device");
 mongoose.set('useFindAndModify', false);
 
 function validatorForExistDevice(req, res) {
@@ -93,7 +92,7 @@ module.exports = {
         if (device) {
             device.stateHistory.push({
                 at: req.body.at,
-                template: req.body.template,
+                temperature: req.body.temperature,
                 humidity: req.body.humidity,
                 co2: req.body.co2,
                 dust: req.body.dust,

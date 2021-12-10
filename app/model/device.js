@@ -1,5 +1,4 @@
 
-
 const mongoose = require('mongoose');
 
 const DeviceSchema = mongoose.Schema({
@@ -16,7 +15,7 @@ const DeviceSchema = mongoose.Schema({
             type: Date,
             default: Date.now()
         },
-        template: Number,
+        temperature: Number,
         humidity: Number,
         co2: Number,
         dust: Number
