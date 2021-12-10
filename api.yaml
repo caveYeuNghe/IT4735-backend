@@ -123,7 +123,7 @@ paths:
         type: string
     get:
       tags:
-        - Device
+        - Devices
       summary: Get device by deviceId
       operationId: getDeviceByDeviceId
       produces:
@@ -146,7 +146,7 @@ paths:
           $ref: '#/responses/NotFound'
     put:
       tags:
-        - Device
+        - Devices
       summary: update device by deviceId
       operationId: updateDeviceByDeviceId
       produces:
@@ -160,6 +160,41 @@ paths:
           required: true
           schema:
             $ref: "#/definitions/DeviceRequest"
+      responses:
+        200:
+          $ref: '#/responses/Device'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+    delete:
+      tags:
+        - Devices
+      summary: delete Device by deviceId
+      operationId: deleteDeviceByDeviceId
+      responses:
+        204:
+          $ref: '#/responses/NoContent'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+
+    post:
+      tags:
+        - Devices
+      summary: update stateHistory by deviceId
+      operationId: updateStateHistoryByDeviceId
+      parameters:
+        - in: body
+          name: state
+          required: true
+          schema:
+            $ref: '#/definitions/State'
       responses:
         200:
           $ref: '#/responses/Device'
@@ -189,8 +224,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Device'
-
-
   Device:
     type: object
     properties:
@@ -209,21 +242,7 @@ definitions:
       stateHistory:
         type: array
         items:
-          type: object
-          properties:
-            at:
-              type: string
-              format: date
-            template:
-              type: number
-            humidity:
-              type: number
-            co2:
-              type: number
-            dust:
-              type: number
-
-
+          $ref: '#/definitions/State'
 
   UserRequest:
     type: object
@@ -244,24 +263,25 @@ definitions:
         enum: ["ON", "OFF"]
       location:
         type: string
-      userId:
-        type: string
       stateHistory:
         type: array
         items:
-          type: object
-          properties:
-            at:
-              type: string
-              format: date
-            template:
-              type: number
-            humidity:
-              type: number
-            co2:
-              type: number
-            dust:
-              type: number
+          $ref: '#/definitions/State'
+
+  State:
+    type: object
+    properties:
+      at:
+        type: string
+        format: date
+      template:
+        type: number
+      humidity:
+        type: number
+      co2:
+        type: number
+      dust:
+        type: number
 
 
 responses:

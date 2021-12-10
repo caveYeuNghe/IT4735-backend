@@ -1,58 +1,40 @@
 
 
 const mongoose = require('mongoose');
-// mongoose.connect('mongodb://localhost:27017/IoT', {useNewUrlParser: true, useUnifiedTopology: true});
 
 const DeviceSchema = mongoose.Schema({
-    _id:mongoose.Types.ObjectId,
-    deviceName:String,
-    connectState: String,
+    _id: mongoose.Types.ObjectId,
+    deviceName: String,
+    connectState: {
+        type: String,
+        enum: ["ON", "OFF"]
+    },
     location: String,
     userId: String,
     stateHistory: [{
-        _id: false,
         at: {
-            type:Date,
+            type: Date,
             default: Date.now()
         },
         template: Number,
         humidity: Number,
-        actorState: String,
-    }],
-    actionHistory: [{
-        _id: false,
-        from : {
-            type: String,
-            enum: ["user", "device"]
-        },
-        action: {
-            type: String,
-            default: "OFF",
-            enum: ["ON", "OFF"]
-        },
-        keepTo: {
-            type: Date,
-            default: Date.now()
-        }
+        co2: Number,
+        dust: Number
     }]
-})
 
+
+})
 
 DeviceSchema.statics = {
     createDevice: async function (data) {
         try {
             let device = new this({
-                _id: new mongoose.Types.ObjectId,
+                _id: data._id,
                 deviceName: data.deviceName,
-                connectState: 'pending',
-                userId: data.userId,
+                connectState: "OFF",
                 location: data.location,
-                stateHistory: [],
-                actionHistory: [{
-                    from: "user",
-                    action: "ON",
-                    keepTo: Date.now()
-                }]
+                userId: data.userId,
+                stateHistory: data.stateHistory,
             })
             await device.save();
             return device;
