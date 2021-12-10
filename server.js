@@ -40,10 +40,12 @@ mqttClient.on('message', async (subscribeTopic, payload) => {
     try {
         var jsonMessage = JSON.parse(payload.toString());
         console.log("jsonMessage: ", jsonMessage)
-        let id = "61b32d76a1caa63e6ca61416";
-        const device = await Device.findById(id);
-        if (device) {
-            device.stateHistory.push({
+        let device = await Device.aggregate([
+            {$match:{connectState: "ON"}},
+            {$sample:{size: 1}}
+        ])
+        if (device[0]) {
+            device[0].stateHistory.push({
                 at: jsonMessage.at,
                 temperature: jsonMessage.temperature,
                 humidity: jsonMessage.humidity,
@@ -51,8 +53,8 @@ mqttClient.on('message', async (subscribeTopic, payload) => {
                 dust: jsonMessage.dust
             })
         }
-        await Device.findByIdAndUpdate(id,{
-            $set: device
+        await Device.findByIdAndUpdate(device[0]._id,{
+            $set: device[0]
         } )
 
     } catch (error) {
