@@ -1,30 +1,31 @@
 const User = require('../model/user');
-const Device = require('../model/device')
+const Device = require('../model/device');
+const bcrypt = require('bcryptjs')
 const mongoose = require('mongoose');
+const passport = require("passport");
+const passportLocal = require("passport-local").Strategy;
+const { rawListeners } = require('../model/device');
 
 module.exports = {
-    login: async (req, res) => {
-        try {
-            let user = await User.findOne({userName: req.body.userName})
-            if (!user) {
-                res.send({
-                    error: "User doesn't exist!"
-                })
-
-            } else if (user.password !== req.body.password) {
-                res.status(404).send({
-                    error: "Wrong password!"
-                })
-            } else {
-                res.send({user})
+    login: async (req, res,next) => {
+        // console.log(req.body)
+        await passport.authenticate("local", (err, user, info) => {
+            if (err) {
+                console.log(err)
+                throw err
             }
-        } catch (e) {
-            res.status(500).send({
-                error: "Internal Server Error"
-            })
-        }
+            if (!user) res.send("User does not exist!");
+            else {
+              req.logIn(user, (err) => {
+                if (err) throw err;
+                // console.log(req.user)
+                res.send("Successfully logged in!");
+              });
+            }
+        })(req, res, next);
     },
     getAllUser: async (req, res) => {
+        console.log(req.user)
         let users = await User.find();
         if (users)
             res.status(200).send({users})
@@ -34,26 +35,28 @@ module.exports = {
             })
     },
     Signup: async (req, res) => {
-
         try {
-            console.log(req.body)
-            if (!req.body.userName || !req.body.password)
+            // console.log(req.body)
+            if (!req.body.username || !req.body.password){
                 res.status(401).send({
                     error: "Invalid username or password"
                 })
-            let existedUser = await User.findOne({userName: req.body.userName});
+            }
+            let existedUser = await User.findOne({username: req.body.username});
             if (existedUser) {
                 res.status(401).send({
                     error: "Account exist"
                 })
             } else {
+                const hashedPassword = await bcrypt.hash(req.body.password, 10);
                 let user = new User({
                     _id: new mongoose.Types.ObjectId,
-                    userName: req.body.userName,
-                    password: req.body.password,
+                    username: req.body.username,
+                    password: hashedPassword,
                     devices: []
                 })
                 await user.save();
+                // console.log(user)
                 res.send(user);
             }
         } catch (error) {
@@ -64,7 +67,15 @@ module.exports = {
             })
         }
     },
-    getUser: async (req, res) => {
+    logout: async (req, res) => {
+        try {
+            await req.logout();
+            res.send("log out successfully!");
+        } catch (error) {
+            res.status(500).send(error)
+        }
+    },
+    getUserAndDevices: async (req, res) => {
         try {
             let user = await User.findById(req.params.userId);
             if (!user) {
@@ -72,8 +83,10 @@ module.exports = {
                     error: "User doesn't exist!"
                 })
             } else {
+                devices = await Device.find({userId: req.params.userId})
                 res.send({
-                    user: user
+                    user: user,
+                    devices: devices
                 })
             }
         } catch (error) {
@@ -82,27 +95,5 @@ module.exports = {
                 error: "Internal Server Error!"
             })
         }
-    },
-    getAllDevicesByUserId: async (req, res) => {
-        try {
-            mongoose.Types.ObjectId(req.params.userId);
-        }catch (e) {
-            res.status(404).send({
-                error: "Not Found userId",
-            })
-        }
-        const userId = mongoose.Types.ObjectId(req.params.userId);
-        const query = {userId: req.params.userId}
-        let user = await User.findById(userId);
-        if (!user)
-            res.status(404).send({
-                error: "User not found"
-            })
-        let devices = await Device.find(query);
-        if (devices)
-            res.send({devices})
     }
-
-
-
 }

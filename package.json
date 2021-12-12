@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --watch server.js"
+    "start": "nodemon --watch server.js",
+    "dev": "nodemon server.js -e js,ejs"
   },
   "repository": {
     "type": "git",
@@ -18,9 +19,14 @@
   },
   "homepage": "https://github.com/phamducdat/IT4735-backend#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
+    "express-session": "^1.17.2",
     "mongoose": "^5.12.9",
     "mqtt": "^4.2.6",
+    "passport": "^0.5.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
     "socket.io": "^4.1.2"
   },
   "devDependencies": {

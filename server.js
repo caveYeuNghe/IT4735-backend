@@ -2,6 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const mqtt = require('mqtt');
 const cors = require('cors');
+const passport = require("passport");
+const passportLocal = require("passport-local").Strategy;
+const expressSession = require("express-session");
 const mqttClient = mqtt.connect('tcp://broker.hivemq.com:1883');
 const Device = require('./app/model/device');
 const User = require('./app/model/user');
@@ -10,6 +13,11 @@ const publishTopic = "nhom06Pub"
 
 
 const server = express().use(express.json()).use(express.urlencoded({extended: true})).use(cors());
+
+server.use(expressSession({secret: "secret"}))
+server.use(passport.initialize());
+server.use(passport.session());
+require("./passportConfig")(passport);
 
 const userRouter = require('./app/router/userRouter');
 const deviceRouter = require('./app/router/deviceRouter');
