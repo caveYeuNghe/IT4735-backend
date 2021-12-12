@@ -3,15 +3,16 @@ const User = require('../model/user')
 var mongoose = require('mongoose');
 mongoose.set('useFindAndModify', false);
 
-function validatorForExistDevice(req, res) {
+function validatorForValidId(req, res) {
     try {
         mongoose.Types.ObjectId(req);
     } catch (e) {
         res.status(404).send({
-            error: "deviceId must be single String of 12 bytes or a string of 24 hex characters"
+            error: "id must be single String of 12 bytes or a string of 24 hex characters"
         })
     }
 }
+
 
 module.exports = {
     getAllDevice: async (req, res) => {
@@ -27,8 +28,9 @@ module.exports = {
     },
 
     getDeviceByDeviceId: async (req, res) => {
+        validatorForValidId(req.params.deviceId, res);
+
         try {
-            validatorForExistDevice(req, res);
             const deviceId = req.params.deviceId;
             let device = await Device.findById(deviceId);
             if (!device) {
@@ -45,6 +47,8 @@ module.exports = {
     },
 
     createDeviceByUserId: async (req, res) => {
+        validatorForValidId(req.params.userId, res);
+        validatorForValidId(req.body._id, res)
         try {
             let user = await User.findById(req.params.userId);
             if (!user) {
@@ -52,8 +56,10 @@ module.exports = {
                     error: "User doesn't exist!"
                 })
             } else {
-                console.log("req = ", req)
                 let device = await Device.createDevice(req.body);
+                if (!device) {
+                    res.status(404).send({error: "Device not found"})
+                }
                 device.userId = req.params.userId;
                 await device.save();
                 res.send({device})
@@ -68,15 +74,15 @@ module.exports = {
         }
     },
     updateDeviceByDeviceId: async (req, res) => {
+        validatorForValidId(req.params.deviceId, res);
         try {
-            validatorForExistDevice(req.params.deviceId, res);
-            console.log("body = ", req.body);
             const deviceId = req.params.deviceId;
-            console.log("deviceId = ", deviceId);
             await Device.findByIdAndUpdate(deviceId, req.body)
             let device = await Device.findById(deviceId);
             if (device) {
                 res.status(200).send({device})
+            }else {
+                res.status(404).send({error: "Device not found"})
             }
 
         } catch (e) {
@@ -86,8 +92,7 @@ module.exports = {
         }
     },
     updateStateHistoryByDeviceId: async (req, res) => {
-        validatorForExistDevice(req.params.deviceId, res);
-        console.log("state = ", req.body);
+        validatorForValidId(req.params.deviceId, res);
         const device = await Device.findById(req.params.deviceId);
         if (device) {
             device.stateHistory.push({
@@ -99,15 +104,17 @@ module.exports = {
             })
             await device.save();
             res.status(200).send({device})
+        }else {
+            res.status(404).send({error: "Device not found"})
         }
 
     },
     deleteDeviceByDeviceId: async (req, res) => {
         try {
-            validatorForExistDevice(req.params.deviceId)
+            validatorForValidId(req.params.deviceId, res)
             await Device.findByIdAndDelete(req.params.deviceId);
             res.status(204).send({})
-        }catch (e) {
+        } catch (e) {
             res.status(500).send({
                 error: "Internal Server Error"
             })
