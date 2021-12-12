@@ -6,10 +6,6 @@ const UserSchema = mongoose.Schema({
     _id: mongoose.Types.ObjectId,
     username: String,
     password: String,
-    devices : [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Device'
-    }],
 })
 
 UserSchema.statics = {

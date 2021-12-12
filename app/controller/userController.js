@@ -75,7 +75,7 @@ module.exports = {
             res.status(500).send(error)
         }
     },
-    getUser: async (req, res) => {
+    getUserAndDevices: async (req, res) => {
         try {
             let user = await User.findById(req.params.userId);
             if (!user) {
@@ -83,60 +83,11 @@ module.exports = {
                     error: "User doesn't exist!"
                 })
             } else {
+                devices = await Device.find({userId: req.params.userId})
                 res.send({
-                    user: user
+                    user: user,
+                    devices: devices
                 })
-            }
-        } catch (error) {
-            res.status(500).send({
-                success: false,
-                error: "Internal Server Error!"
-            })
-        }
-    },
-    getAllDevicesByUserId: async (req, res) => {
-        try {
-            mongoose.Types.ObjectId(req.params.userId);
-        }catch (e) {
-            res.status(404).send({
-                error: "Not Found userId",
-            })
-        }
-        const userId = mongoose.Types.ObjectId(req.params.userId);
-        const query = {userId: req.params.userId}
-        let user = await User.findById(userId);
-        if (!user)
-            res.status(404).send({
-                error: "User not found"
-            })
-        let devices = await Device.find(query);
-        if (devices)
-            res.send({devices})
-    },
-    createDevice: async (req, res) => {
-        try {
-            let user = await User.findById(req.params.userId);
-            if (!user) {
-                res.send({
-                    error: "User doesn't exist!"
-                })
-            } else {
-                let newDevice = await new Device({
-                    deviceName: req.body.deviceName,
-                    connectState
-                });
-                    console.log(newDevice);
-                    user.devices.push({
-                        deviceId: newDevice._id,
-                        location: req.body.location,
-                        deviceName: newDevice.deviceName,
-                        connectState: newDevice.connectState
-                    })
-                    await user.save();
-                    res.send({
-                        success: true,
-                        devices: user.devices
-                    })
             }
         } catch (error) {
             res.status(500).send({

@@ -9,40 +9,39 @@ info:
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-host: 'localhost:8080'
-
+host: 'localhost:3000'
 
 paths:
-  /auth/login:
+  /users/login:
     post:
       tags:
-        - Auth
-      summary: accepts web
-      operationId: Login
+        - User
       produces:
         - application/json
       consumes:
         - application/json
+      operationId: login
       parameters:
         - in: body
-          name: authRequest
+          name: user
           required: true
           schema:
-            $ref: "#/definitions/UserLoginRequest"
+            $ref: '#/definitions/UserRequest'
       responses:
         200:
-          $ref: '#/responses/UserLoginResponse'
+          $ref: '#/responses/User'
         401:
           $ref: '#/responses/NoAuthorized'
         403:
           $ref: '#/responses/Forbidden'
         404:
           $ref: '#/responses/NotFound'
-  /auth/signup:
+
+  /users:
     post:
       tags:
-        - Auth
-      summary: sign up web
+        - User
+      summary: create new account
       operationId: Signup
       produces:
         - application/json
@@ -50,13 +49,35 @@ paths:
         - application/json
       parameters:
         - in: body
-          name: authRequest
+          name: user
           required: true
           schema:
-            $ref: "#/definitions/UserSignUpRequest"
+            $ref: "#/definitions/UserRequest"
       responses:
         200:
-          $ref: '#/responses/UserSignUpResponse'
+          $ref: '#/responses/User'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+  /users/{userId}:
+    parameters:
+      - in: path
+        name: userId
+        type: string
+        required: true
+    get:
+      tags:
+        - User
+      summary: Get user by userId
+      operationId: getUser
+      produces:
+        - application/json
+      responses:
+        200:
+          $ref: '#/responses/User'
         401:
           $ref: '#/responses/NoAuthorized'
         403:
@@ -64,88 +85,119 @@ paths:
         404:
           $ref: '#/responses/NotFound'
 
-  /user/onGetUserInfo:
+  /users/{userId}/devices:
+    parameters:
+      - in: path
+        name: userId
+        required: true
+        type: string
     post:
       tags:
         - User
-      summary: getUserInfo web
-      operationId: getUserInfo
+      summary: create new device for user
+      operationId: createDeviceByUserId
       produces:
         - application/json
       consumes:
         - application/json
       parameters:
-        - in: body
-          name: userId
-          required: true
-          schema:
-            type: object
-            required:
-              - userId
-            properties:
-              userId:
-                type: string
-      responses:
-        200:
-          $ref: '#/responses/OnGetUserInfo'
-        401:
-          $ref: '#/responses/NoAuthorized'
-        403:
-          $ref: '#/responses/Forbidden'
-        404:
-          $ref: '#/responses/NotFound'
-
-  /device/onGetDeviceInfo:
-    post:
-      tags:
-        - device
-      summary: get device info
-      operationId: onGetDeviceInfo
-      produces:
-        - application/json
-      consumes:
-        - application/json
-      parameters:
-        - in: body
-          name: deviceId
-          required: true
-          schema:
-            type: object
-            required:
-              - deviceId
-            properties:
-              deviceId:
-                type: string
-      responses:
-        200:
-          $ref: '#/responses/OnGetDeviceInfo'
-        401:
-          $ref: '#/responses/NoAuthorized'
-        403:
-          $ref: '#/responses/Forbidden'
-        404:
-          $ref: '#/responses/NotFound'
-  /device/onCreateDevice:
-    post:
-      tags:
-        - device
-      summary: create device
-      operationId: onCreateDevice
-      produces:
-        - application/json
-      consumes:
-        - application/json
-      parameters:
-
         - in: body
           name: device
           required: true
           schema:
-            $ref: '#/definitions/DeviceCreateRequest'
-
+            $ref: "#/definitions/DeviceRequest"
       responses:
         200:
-          $ref: '#/responses/OnCreateDevice'
+          $ref: '#/responses/Device'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+  /devices/{deviceId}:
+    parameters:
+      - in: path
+        name: deviceId
+        required: true
+        type: string
+    get:
+      tags:
+        - Devices
+      summary: Get device by deviceId
+      operationId: getDeviceByDeviceId
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          type: string
+      responses:
+        200:
+          $ref: '#/responses/Device'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+    put:
+      tags:
+        - Devices
+      summary: update device by deviceId
+      operationId: updateDeviceByDeviceId
+      produces:
+        - application/json
+      consumes:
+        - application/json
+
+      parameters:
+        - in: body
+          name: device
+          required: true
+          schema:
+            $ref: "#/definitions/DeviceRequest"
+      responses:
+        200:
+          $ref: '#/responses/Device'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+    delete:
+      tags:
+        - Devices
+      summary: delete Device by deviceId
+      operationId: deleteDeviceByDeviceId
+      responses:
+        204:
+          $ref: '#/responses/NoContent'
+        401:
+          $ref: '#/responses/NoAuthorized'
+        403:
+          $ref: '#/responses/Forbidden'
+        404:
+          $ref: '#/responses/NotFound'
+
+    post:
+      tags:
+        - Devices
+      summary: update stateHistory by deviceId
+      operationId: updateStateHistoryByDeviceId
+      parameters:
+        - in: body
+          name: state
+          required: true
+          schema:
+            $ref: '#/definitions/State'
+      responses:
+        200:
+          $ref: '#/responses/Device'
         401:
           $ref: '#/responses/NoAuthorized'
         403:
@@ -154,13 +206,24 @@ paths:
           $ref: '#/responses/NotFound'
 
 
-
-
-
-
-
 definitions:
+  User:
+    type: object
+    properties:
 
+      _id:
+        type: string
+
+      username:
+        type: string
+
+      password:
+        type: string
+
+      devices:
+        type: array
+        items:
+          $ref: '#/definitions/Device'
   Device:
     type: object
     properties:
@@ -171,336 +234,72 @@ definitions:
         type: string
       connectState:
         type: string
+        enum: ["ON", "OFF"]
       location:
         type: string
-      creatorId:
-        type: string
-      stateHistory:
-        type: array
-        items:
-          type: object
-          properties:
-            _id:
-              type: string
-            at:
-              type: object
-              properties:
-                type:
-                  type: string
-                default:
-                  type: string
-                  format: date
-            template:
-              type: number
-            humidity:
-              type: number
-            actorState:
-              type: string
-
-      actionHistory:
-        type: array
-        items:
-          type: object
-          properties:
-            _id:
-              type: string
-            from:
-              type: object
-              properties:
-                type:
-                  type: string
-                enum:
-                  type: string
-                  enum: ["user", "device"]
-            action:
-              type: object
-              properties:
-                type:
-                  type: string
-
-                default:
-                  type: string
-
-                enum:
-                  type: string
-                  enum: ["ON", "OFF"]
-            keepTo:
-              type: object
-              properties:
-                type:
-                  type: string
-                  format: date
-                default:
-                  type: string
-                  format: date
-  User:
-    type: object
-    properties:
-
-      _id:
-        type: string
-      username:
-        type: string
-      password:
-        type: string
-      devices:
-        type: array
-        items:
-          type: object
-          properties:
-            _id:
-              type: string
-            deviceId:
-              type: string
-            deviceName:
-              type: string
-            location:
-              type: string
-            connectState:
-              type: string
-            added:
-              type: object
-              properties:
-                type:
-                  type: string
-                  format: date
-                default:
-                  type: string
-                  format: date
-  UserLoginRequest:
-    type: object
-    properties:
-      username:
-        type: string
-      password:
-        type: string
-  UserLoginResponse:
-    type: object
-    properties:
-      success:
-        type: boolean
       userId:
         type: string
-      username:
-        type: string
-  UserSignUpRequest:
-    type: object
-    properties:
-      username:
-        type: string
-      password:
-        type: string
-  UserSignUpResponse:
-    type: object
-    properties:
-      _id:
-        type: string
-      username:
-        type: string
-      password:
-        type: string
-      device:
+      stateHistory:
         type: array
         items:
-          $ref: '#/definitions/Device'
-  UserInfor:
+          $ref: '#/definitions/State'
+
+  UserRequest:
     type: object
     properties:
-
-      _id:
-        type: string
       username:
         type: string
       password:
         type: string
-      devices:
-        type: array
-        items:
-          type: object
-          properties:
-            _id:
-              type: string
-            deviceId:
-              type: string
-            deviceName:
-              type: string
-            location:
-              type: string
-            connectState:
-              type: string
-            added:
-              type: object
-              properties:
-                type:
-                  type: string
-                  format: date
-                default:
-                  type: string
-                  format: date
-      success:
-        type: boolean
-  DeviceInfor:
+  DeviceRequest:
     type: object
     properties:
-      success:
-        type: boolean
       _id:
         type: string
-
       deviceName:
         type: string
       connectState:
         type: string
+        enum: ["ON", "OFF"]
       location:
-        type: string
-      creatorId:
         type: string
       stateHistory:
         type: array
         items:
-          type: object
-          properties:
-            _id:
-              type: string
-            at:
-              type: object
-              properties:
-                type:
-                  type: string
-                default:
-                  type: string
-                  format: date
-            template:
-              type: number
-            humidity:
-              type: number
-            actorState:
-              type: string
+          $ref: '#/definitions/State'
 
-
-  DeviceCreateResponse:
+  State:
     type: object
     properties:
-      deviceId:
+      at:
         type: string
-      location:
-        type: string
-      deviceName:
-        type: string
-      connectState:
-        type: string
-  DeviceCreateRequest:
-    type: object
-    properties:
-
-      userId:
-        type: string
-      _id:
-        type: string
-
-      deviceName:
-          type: string
-      connectState:
-          type: string
-      location:
-          type: string
-      creatorId:
-          type: string
-      stateHistory:
-          type: array
-          items:
-            type: object
-            properties:
-              _id:
-                type: string
-              at:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  default:
-                    type: string
-                    format: date
-              template:
-                type: number
-              humidity:
-                type: number
-              actorState:
-                type: string
-
-      actionHistory:
-          type: array
-          items:
-            type: object
-            properties:
-              _id:
-                type: string
-              from:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  enum:
-                    type: string
-                    enum: [ "user", "device" ]
-              action:
-                type: object
-                properties:
-                  type:
-                    type: string
-
-                  default:
-                    type: string
-
-                  enum:
-                    type: string
-                    enum: [ "ON", "OFF" ]
-              keepTo:
-                type: object
-                properties:
-                  type:
-                    type: string
-                    format: date
-                  default:
-                    type: string
-                    format: date
-
-
-
-
-
-
-
-
-
-
-
-
-
+        format: date
+      template:
+        type: number
+      humidity:
+        type: number
+      co2:
+        type: number
+      dust:
+        type: number
 
 
 responses:
 
-  UserLoginResponse:
-    description: "auth response"
+
+  User:
+    description: "user"
     schema:
-      $ref: "#/definitions/UserLoginResponse"
-  UserSignUpResponse:
-    description: "sign up response"
+      $ref: '#/definitions/User'
+
+
+
+
+  Device:
+    description: "user list"
     schema:
-      $ref: "#/definitions/UserSignUpResponse"
-  OnGetUserInfo:
-    description: "get user info"
-    schema:
-      $ref: '#/definitions/UserInfor'
-  OnGetDeviceInfo:
-    description: "get device info"
-    schema:
-      $ref: "#/definitions/DeviceInfor"
-  OnCreateDevice:
-    description: "create device"
-    schema:
-      $ref: '#/definitions/DeviceCreateResponse'
+      $ref: '#/definitions/Device'
+
 
   OK:
     description: '200: OK'
@@ -520,6 +319,3 @@ responses:
     description: '404: Not Found'
   InternalServerError:
     description: '500: Internal Server Error'
-
-
-
