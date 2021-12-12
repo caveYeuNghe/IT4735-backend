@@ -13,7 +13,6 @@ function validatorForValidId(req, res) {
     }
 }
 
-
 module.exports = {
     getAllDevice: async (req, res) => {
         try {
@@ -28,9 +27,8 @@ module.exports = {
     },
 
     getDeviceByDeviceId: async (req, res) => {
-        validatorForValidId(req.params.deviceId, res);
-
         try {
+            validatorForValidId(req.params.deviceId, res);
             const deviceId = req.params.deviceId;
             let device = await Device.findById(deviceId);
             if (!device) {
