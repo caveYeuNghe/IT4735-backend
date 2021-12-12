@@ -1,5 +1,5 @@
 const {json} = require('express');
-const Device = require('../model/device');
+const Device = require('./model/device');
 
 const mqtt = require('mqtt');
 const mqttClient = mqtt.connect('tcp://broker.hivemq.com');
