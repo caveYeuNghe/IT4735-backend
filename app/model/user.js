@@ -4,8 +4,12 @@ const mongoose = require('mongoose');
 
 const UserSchema = mongoose.Schema({
     _id: mongoose.Types.ObjectId,
-    userName: String,
+    username: String,
     password: String,
+    devices : [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Device'
+    }],
 })
 
 UserSchema.statics = {
