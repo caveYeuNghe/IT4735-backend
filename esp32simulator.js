@@ -1,5 +1,5 @@
 const {json} = require('express');
-const Device = require('./model/device');
+const Device = require('./app/model/device');
 
 const mqtt = require('mqtt');
 const mqttClient = mqtt.connect('tcp://broker.hivemq.com');
@@ -29,7 +29,7 @@ function fakeData() {
     at = Date.now();
     co2 = (30 + 10 * Math.random()).toFixed(1);
     dust = (30 + 10 * Math.random()).toFixed(1);
-    console.log("We got fake data")
+    console.log("We got the fake data")
 
 
 }

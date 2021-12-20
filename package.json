@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --watch server.js",
-    "dev": "nodemon server.js -e js,ejs"
+    "dev": "nodemon server.js -e js,ejs",
+    "data": "node esp32simulator"
+
   },
   "repository": {
     "type": "git",
