@@ -2,27 +2,18 @@ const User = require('../model/user');
 const Device = require('../model/device');
 const bcrypt = require('bcryptjs')
 const mongoose = require('mongoose');
-const passport = require("passport");
-const passportLocal = require("passport-local").Strategy;
 const { rawListeners } = require('../model/device');
 
 module.exports = {
-    login: async (req, res,next) => {
-        // console.log(req.body)
-        await passport.authenticate("local", (err, user, info) => {
-            if (err) {
-                console.log(err)
-                throw err
-            }
-            if (!user) res.send("User does not exist!");
-            else {
-              req.logIn(user, (err) => {
-                if (err) throw err;
-                // console.log(req.user)
-                res.send("Successfully logged in!");
-              });
-            }
-        })(req, res, next);
+    login: async (req, res) => {
+        console.log(req.body)
+        try {
+            const user = await User.findByCredentials(req.body.username, req.body.password)
+            const token = await user.generateAuthToken()
+            res.status(200).send({user, token})
+        } catch(e) {
+            res.status(400).send(e)
+        }
     },
     getAllUser: async (req, res) => {
         console.log(req.user)
@@ -48,16 +39,25 @@ module.exports = {
                     error: "Account exist"
                 })
             } else {
-                const hashedPassword = await bcrypt.hash(req.body.password, 10);
-                let user = new User({
+                console.log(req.body)
+                const user = new User({
+                    ...req.body,
                     _id: new mongoose.Types.ObjectId,
-                    username: req.body.username,
-                    password: hashedPassword,
-                    devices: []
                 })
-                await user.save();
-                // console.log(user)
-                res.send(user);
+
+                try {
+                    try {
+                        await user.save()
+                    } catch (e) {
+                        console.log(e)
+                    }
+
+                    console.log("1")
+                    const token = await user.generateAuthToken()
+                    res.status(201).send({user, token})
+                } catch (e) {
+                    res.status(400).send(e)
+                }
             }
         } catch (error) {
             console.log(error);
@@ -69,10 +69,15 @@ module.exports = {
     },
     logout: async (req, res) => {
         try {
-            await req.logout();
-            res.send("log out successfully!");
-        } catch (error) {
-            res.status(500).send(error)
+            req.user.tokens = req.user.tokens.filter((token) => {
+                return token.token !== req.token
+            })
+            await req.user.save()
+    
+            res.status(200).send("log out successfully")
+    
+        } catch (e) {
+            res.status(500).send()
         }
     },
     getUserAndDevices: async (req, res) => {
@@ -89,6 +94,17 @@ module.exports = {
                     devices: devices
                 })
             }
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                error: "Internal Server Error!"
+            })
+        }
+    },
+    getCurrentUser: async (req, res) => {
+        try {
+            let user = req.user
+            res.send(user)
         } catch (error) {
             res.status(500).send({
                 success: false,

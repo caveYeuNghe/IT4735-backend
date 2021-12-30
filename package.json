@@ -8,7 +8,6 @@
     "start": "nodemon --watch server.js",
     "dev": "nodemon server.js -e js,ejs",
     "data": "node esp32simulator"
-
   },
   "repository": {
     "type": "git",
@@ -24,6 +23,7 @@
     "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.9",
     "mqtt": "^4.2.6",
     "passport": "^0.5.0",
