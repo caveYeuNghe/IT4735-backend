@@ -13,6 +13,13 @@ function validatorForValidId(req, res) {
     }
 }
 
+async function validatorForDeviceExists(deviceId, res) {
+    let device = await Device.findById(deviceId);
+    if (device) {
+        res.status(404).send({error: "Device is existed"})
+    }
+}
+
 module.exports = {
     getAllDevice: async (req, res) => {
         try {
@@ -47,6 +54,7 @@ module.exports = {
     createDeviceByUserId: async (req, res) => {
         validatorForValidId(req.params.userId, res);
         validatorForValidId(req.body._id, res)
+        await validatorForDeviceExists(req.body._id, res)
         try {
             let user = await User.findById(req.params.userId);
             if (!user) {
