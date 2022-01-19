@@ -1,16 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const mqtt = require('mqtt');
 const cors = require('cors');
 const passport = require("passport");
 const passportLocal = require("passport-local").Strategy;
 const expressSession = require("express-session");
-const mqttClient = mqtt.connect('tcp://broker.hivemq.com:1883');
 const Device = require('./app/model/device');
 const User = require('./app/model/user');
-const subscribeTopic = "nhom06Sub"
-const publishTopic = "nhom06Pub"
-
+var mqttClient = require('./app/mqttWrapper/mqttClient');
+const subscribeTopic = "nhom10iot/data";
 
 const server = express().use(express.json()).use(express.urlencoded({extended: true})).use(cors());
 
@@ -48,23 +45,21 @@ mqttClient.on('message', async (subscribeTopic, payload) => {
     try {
         var jsonMessage = JSON.parse(payload.toString());
         console.log("jsonMessage: ", jsonMessage)
-        let device = await Device.aggregate([
-            {$match:{connectState: "ON"}},
-            {$sample:{size: 1}}
-        ])
-        if (device[0]) {
-            device[0].stateHistory.push({
+
+        const device = await Device.findById(jsonMessage.deviceId);
+        if (device) {
+            device.stateHistory.push({
                 at: jsonMessage.at,
                 temperature: jsonMessage.temperature,
                 humidity: jsonMessage.humidity,
                 co2: jsonMessage.co2,
                 dust: jsonMessage.dust
             })
-        }
-        await Device.findByIdAndUpdate(device[0]._id,{
-            $set: device[0]
-        } )
 
+            await Device.findByIdAndUpdate(device._id, {
+                $set: device
+            })
+        }
     } catch (error) {
         console.log(error);
     }
