@@ -16,6 +16,7 @@ class Device {
     constructor(deviceID, location) {
         this.deviceID = deviceID;
         this.location = location;
+        this.connectState = "ON";
     }
 }
 
@@ -55,7 +56,9 @@ async function every15SecondsFunction() {
         mqttClient.publish(publishTopic, JSON.stringify(
             {
                 deviceId: device.deviceID,
+                connectState: device.connectState,
                 location: device.location,
+                at: at,
                 temperature: temperature,
                 humidity: humidity,
                 co2:co2,
@@ -69,11 +72,9 @@ mqttClient.on('message', (subscribeTopic, payload) => {
     try {
         let jsonMessage = JSON.parse(payload.toString());
         let deviceId = subscribeTopic.split("/")[1];
-        if (jsonMessage.connectState === "OFF") {
-            console.log(deviceId + " OFF")
-        }
-        if (jsonMessage.connectState === "ON")
-            console.log(deviceId + " ON")
+
+        const index = devices.findIndex(device => device.deviceID === deviceId);
+        devices[index].connectState = jsonMessage.connectState;
     } catch (error) {
         console.log(error)
     }

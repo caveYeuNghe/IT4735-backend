@@ -7,7 +7,7 @@ const expressSession = require("express-session");
 const Device = require('./app/model/device');
 const User = require('./app/model/user');
 var mqttClient = require('./app/mqttWrapper/mqttClient');
-const subscribeTopic = "nhom10iot/data";
+
 
 const server = express().use(express.json()).use(express.urlencoded({extended: true})).use(cors());
 
@@ -34,36 +34,6 @@ connect.then((db) => {
 });
 
 const http = require('http').createServer(server);
-
-mqttClient.on('connect', () => {
-    mqttClient.subscribe(subscribeTopic, (err) => {
-        if (err) console.log(err);
-    })
-})
-
-mqttClient.on('message', async (subscribeTopic, payload) => {
-    try {
-        var jsonMessage = JSON.parse(payload.toString());
-        console.log("jsonMessage: ", jsonMessage)
-
-        const device = await Device.findById(jsonMessage.deviceId);
-        if (device) {
-            device.stateHistory.push({
-                at: jsonMessage.at,
-                temperature: jsonMessage.temperature,
-                humidity: jsonMessage.humidity,
-                co2: jsonMessage.co2,
-                dust: jsonMessage.dust
-            })
-
-            await Device.findByIdAndUpdate(device._id, {
-                $set: device
-            })
-        }
-    } catch (error) {
-        console.log(error);
-    }
-})
 
 http.mqttClient = mqttClient;
 http.listen(3000);

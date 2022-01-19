@@ -1,7 +1,7 @@
 const Device = require('../model/device');
 const User = require('../model/user')
 var mongoose = require('mongoose');
-var mqttClient = require('./app/mqttWrapper/mqttClient');
+var mqttClient = require('../mqttWrapper/mqttClient');
 
 mongoose.set('useFindAndModify', false);
 
@@ -86,15 +86,15 @@ module.exports = {
         validatorForValidId(req.params.deviceId, res);
         try {
             const deviceId = req.params.deviceId;
-            await Device.findByIdAndUpdate(deviceId, req.body)
+            await Device.findByIdAndUpdate(deviceId, req.body);
             let device = await Device.findById(deviceId);
             if (device) {
-                res.status(200).send({device})
+                res.status(200).send({device});
 
-                const pubTopic = 'nhom10iot/' + device._id + '/command'
-                mqttClient.publish(pubTopic, JSON.stringify({
+                const pubTopic = 'nhom10iot/' + device._id + '/command';
+                mqttClient.sendMessage(pubTopic, JSON.stringify({
                     connectState: device.connectState
-                }))
+                }));
             }else {
                 res.status(404).send({error: "Device not found"})
             }
