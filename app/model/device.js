@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const DeviceSchema = mongoose.Schema({
     _id: mongoose.Types.ObjectId,
+    embedId:String,
     deviceName: String,
     connectState: {
         type: String,
@@ -28,7 +29,8 @@ DeviceSchema.statics = {
     createDevice: async function (data) {
         try {
             let device = new this({
-                _id: data._id,
+                _id: new mongoose.Types.ObjectId,
+                embedId:data.embedId,
                 deviceName: data.deviceName,
                 connectState: "OFF",
                 location: data.location,
