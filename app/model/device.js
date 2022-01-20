@@ -8,7 +8,7 @@ const DeviceSchema = mongoose.Schema({
         type: String,
         enum: ["ON", "OFF"]
     },
-    location: String,
+    location: [],
     userId: String,
     stateHistory: [{
         at: {
