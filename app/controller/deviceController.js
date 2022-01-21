@@ -15,8 +15,8 @@ function validatorForValidId(req, res) {
     }
 }
 
-async function validatorForDeviceExists(deviceId, res) {
-    let device = await Device.findById(deviceId);
+async function validatorForDeviceExists(req, res) {
+    let device = await Device.findOne({embedId:req.body.embedId})
     if (device) {
         res.status(404).send({error: "Device is existed"})
     }
@@ -53,10 +53,25 @@ module.exports = {
         }
     },
 
+    getDeviceByEmbedId: async (req, res) => {
+        try {
+            let device = await Device.findOne({embedId:req.params.embedId})
+            if (!device) {
+                res.status(404).send({error: "Device not found"})
+            } else {
+                res.status(200).send({device})
+            }
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                error: "Internal Server Error!"
+            })
+        }
+    },
+
     createDeviceByUserId: async (req, res) => {
         validatorForValidId(req.params.userId, res);
-        validatorForValidId(req.body._id, res)
-        await validatorForDeviceExists(req.body._id, res)
+        await validatorForDeviceExists(req,res);
         try {
             let user = await User.findById(req.params.userId);
             if (!user) {

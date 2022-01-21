@@ -6,6 +6,7 @@ const auth = require("../middleware/auth")
 
 deviceRouter.get("/",auth, deviceController.getAllDevice)
 deviceRouter.get("/:deviceId", auth, deviceController.getDeviceByDeviceId)
+deviceRouter.get("/embed/:embedId", auth, deviceController.getDeviceByEmbedId)
 deviceRouter.put("/:deviceId", auth, deviceController.updateDeviceByDeviceId);
 deviceRouter.post("/:deviceId", auth, deviceController.updateStateHistoryByDeviceId);
 deviceRouter.delete("/:deviceId", auth, deviceController.deleteDeviceByDeviceId);
