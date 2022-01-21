@@ -86,7 +86,6 @@ module.exports = {
                 device.userId = req.params.userId;
                 await device.save();
                 res.send({device})
-
             }
         } catch (error) {
             console.log(error);
@@ -106,7 +105,7 @@ module.exports = {
             if (device) {
                 res.status(200).send({device});
 
-                const pubTopic = 'nhom10iot/' + device._id + '/command';
+                const pubTopic = 'nhom10iot/' + device.embedId + '/command';
                 mqttClient.sendMessage(pubTopic, JSON.stringify({
                     connectState: device.connectState
                 }));
