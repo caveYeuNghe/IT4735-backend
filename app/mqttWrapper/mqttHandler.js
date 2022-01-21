@@ -36,7 +36,7 @@ class MqttHandler {
                 var jsonMessage = JSON.parse(payload.toString());
                 console.log("jsonMessage: ", jsonMessage);
 
-                const device = await Device.findById(jsonMessage.deviceId);
+                const device = Device.findOne({embedId: jsonMessage.embedId});
                 if (device) {
                     device.connectState = jsonMessage.connectState;
                     device.location = jsonMessage.location;

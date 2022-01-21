@@ -71,7 +71,6 @@ module.exports = {
                 device.userId = req.params.userId;
                 await device.save();
                 res.send({device})
-
             }
         } catch (error) {
             console.log(error);
