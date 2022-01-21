@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const DeviceSchema = mongoose.Schema({
     _id: mongoose.Types.ObjectId,
-    embedId:String,
+    embedId: String,
     deviceName: String,
     connectState: {
         type: String,
