@@ -21,8 +21,6 @@ const DeviceSchema = mongoose.Schema({
         co2: Number,
         dust: Number
     }]
-
-
 })
 
 DeviceSchema.statics = {
