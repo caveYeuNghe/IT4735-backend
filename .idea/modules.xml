@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/IT4735-backend.iml" filepath="$PROJECT_DIR$/.idea/IT4735-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../iot-web-fe/.idea/iot-web-fe.iml" filepath="$PROJECT_DIR$/../iot-web-fe/.idea/iot-web-fe.iml" />
       <module fileurl="file://$PROJECT_DIR$/../sample/.idea/sample.iml" filepath="$PROJECT_DIR$/../sample/.idea/sample.iml" />
     </modules>
   </component>
