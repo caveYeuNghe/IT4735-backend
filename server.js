@@ -8,7 +8,6 @@ const Device = require('./app/model/device');
 const User = require('./app/model/user');
 var mqttClient = require('./app/mqttWrapper/mqttClient');
 
-
 const server = express().use(express.json()).use(express.urlencoded({extended: true})).use(cors());
 
 server.use(expressSession({secret: "secret"}))
