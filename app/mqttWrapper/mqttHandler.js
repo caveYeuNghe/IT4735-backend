@@ -39,14 +39,17 @@ class MqttHandler {
                 let device = await Device.findOne({embedId: jsonMessage.embedId});
                 if (device) {
                     device.connectState = jsonMessage.connectState;
-                    device.location = jsonMessage.location;
-                    device.stateHistory.push({
-                        at: jsonMessage.at,
-                        temperature: jsonMessage.temperature,
-                        humidity: jsonMessage.humidity,
-                        co2: jsonMessage.co2,
-                        dust: jsonMessage.dust
-                    })
+
+                    if (jsonMessage.connectState === "ON") {
+                        device.location = jsonMessage.location;
+                        device.stateHistory.push({
+                            at: jsonMessage.at,
+                            temperature: jsonMessage.temperature,
+                            humidity: jsonMessage.humidity,
+                            co2: jsonMessage.co2,
+                            dust: jsonMessage.dust
+                        })
+                    }
 
                     await Device.findByIdAndUpdate(device._id, {
                         $set: device
