@@ -42,6 +42,7 @@ module.exports = {
                 console.log(req.body)
                 const user = new User({
                     ...req.body,
+                    role: "user",
                     _id: new mongoose.Types.ObjectId,
                 })
 

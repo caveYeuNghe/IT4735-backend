@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
     _id: mongoose.Types.ObjectId,
     username: String,
     password: String,
+    role: String,
     tokens: [{
         token: {
             type: String,

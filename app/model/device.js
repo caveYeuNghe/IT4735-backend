@@ -5,6 +5,7 @@ const DeviceSchema = mongoose.Schema({
     _id: mongoose.Types.ObjectId,
     embedId: String,
     deviceName: String,
+    isPublic: {type: Boolean, default: false},
     connectState: {
         type: String,
         enum: ["ON", "OFF"]
