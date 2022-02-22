@@ -42,6 +42,10 @@ class MqttHandler {
 
                     if (jsonMessage.connectState === "ON") {
                         device.location = jsonMessage.location;
+
+                        while (device.stateHistory.length >= 25)
+                            device.stateHistory.shift();
+
                         device.stateHistory.push({
                             at: jsonMessage.at,
                             temperature: jsonMessage.temperature,
