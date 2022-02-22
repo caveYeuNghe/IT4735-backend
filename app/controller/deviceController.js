@@ -37,7 +37,6 @@ module.exports = {
 
     getDeviceByDeviceId: async (req, res) => {
         try {
-            validatorForValidId(req.params.deviceId, res);
             const deviceId = req.params.deviceId;
             let device = await Device.findById(deviceId);
             if (!device) {
@@ -62,6 +61,7 @@ module.exports = {
                 res.status(200).send({device})
             }
         } catch (error) {
+            console.log(error);
             res.status(500).send({
                 success: false,
                 error: "Internal Server Error!"
@@ -70,7 +70,6 @@ module.exports = {
     },
 
     createDeviceByUserId: async (req, res) => {
-        
         validatorForValidId(req.params.userId, res);
         await validatorForDeviceExists(req,res);
         try {
@@ -81,18 +80,19 @@ module.exports = {
                 })
             } else {
                 let device = await Device.createDevice(req.body);
-                if(req.user.role == "admin") {
+                if(req.user.role === "admin") {
                     device.isPublic = true
                 }
                 if (!device) {
                     res.status(404).send({error: "Device not found"})
                 }
-                device.userId = req.params.userId;
-                await device.save();
-                res.send({device})
+                else {
+                    device.userId = req.params.userId;
+                    await device.save();
+                    res.send({device})
+                }
             }
         } catch (error) {
-            console.log(error);
             res.status(500).send({
                 success: false,
                 error: "Internal Server Error!"

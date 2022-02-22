@@ -36,7 +36,6 @@ mqttClient.on('connect', () => {
     })
 })
 
-// const interval = setInterval(every5SecondsFunction, 5000);
 const interval = setInterval(async () =>{
     await every15SecondsFunction()
 },15000);
@@ -47,12 +46,11 @@ function fakeData() {
     at = Date.now();
     co2 = (30 + 10 * Math.random()).toFixed(1);
     dust = (30 + 10 * Math.random()).toFixed(1);
-    console.log("We got the fake data")
 }
 
 async function every15SecondsFunction() {
-    fakeData();
     devices.forEach(device => {
+        fakeData();
         mqttClient.publish(publishTopic, JSON.stringify(
             {
                 embedId: device.embedId,
@@ -64,7 +62,9 @@ async function every15SecondsFunction() {
                 co2:co2,
                 dust:dust
             }
-        ))
+        ));
+
+        console.log(device.embedId + ' ' + device.connectState);
     })
 }
 
@@ -74,9 +74,9 @@ mqttClient.on('message', (subscribeTopic, payload) => {
         let embedId = subscribeTopic.split("/")[1];
 
         const index = devices.findIndex(device => device.embedId === embedId);
-        devices[index].connectState = jsonMessage.connectState;
+        if (index !== -1)
+            devices[index].connectState = jsonMessage.connectState;
     } catch (error) {
         console.log(error)
     }
-
 })

@@ -7,7 +7,6 @@
 #include <NTPClient.h>
 #include <IPGeolocation.h>
 
-
 #define ssid "Quang Huy"
 #define password "abcd1234"
 #define mqtt_server "broker.hivemq.com"
@@ -31,22 +30,20 @@ float longitude;
 volatile byte state = HIGH;
 char buffer[256];
 
-void setup() 
-{
+void setup() {
   Serial.begin(9600);
   setup_wifi();
   
   client.setServer(mqtt_server, mqtt_port); 
   client.setCallback(callback);
-
+  
   setup_location();
   
   timeClient.begin();
-  timeClient.setTimeOffset(25200);
+  timeClient.setTimeOffset(0);
 }
-// Hàm kết nối wifi
-void setup_wifi() 
-{
+
+void setup_wifi() {
   delay(10);
   WiFi.begin(ssid, password);
 }
@@ -58,38 +55,31 @@ void setup_location() {
   longitude = IPG.longitude;
 }
 
-// Hàm call back để nhận dữ liệu
 void callback(char* topic, byte* payload, unsigned int length) {
   StaticJsonDocument<16> doc;
   deserializeJson(doc, payload, length);
+  
   if ( doc["connectState"] == "ON" && state == LOW ) {
     Serial.print('>');
-    delay(10);
-    Serial.print("ON\\");
+    delay(5);
+    Serial.print("ON\n");
   }
   else if (doc["connectState"] == "OFF" && state == HIGH) {
     Serial.print('>');
-    delay(10);
-    Serial.print("OFF\\");
-  }
-}
-// Hàm reconnect thực hiện kết nối lại khi mất kết nối với MQTT Broker
-void reconnect() 
-{
-  while (!client.connected()) // Chờ tới khi kết nối
-  {
-    // Thực hiện kết nối với mqtt user và pass
-    if (client.connect("ESP8266_id1","ESP_offline",0,0,"ESP8266_id1_offline"))  //kết nối vào broker
-      client.subscribe(sub); //đăng kí nhận dữ liệu từ topic IoT47_MQTT_Test
-    else 
-      delay(5000);
+    delay(5);
+    Serial.print("OFF\n");
   }
 }
 
-void loop() 
-{
-  if (!client.connected())// Kiểm tra kết nối
-    reconnect();
+void loop() {
+  while (!client.connected()) {
+    if (client.connect("riudevice"))
+      client.subscribe(sub);
+    else {
+      delay(3000);
+    }
+  }
+  
   client.loop();
 
   if (Serial.available () > 0) {
@@ -102,13 +92,14 @@ void loop()
         else
           state = LOW;
       }
-      else state = HIGH;
-
+      else 
+        state = HIGH;
+  
       doc["embedId"] = embedId;
       
       timeClient.update();
       doc["at"] = ((uint64)timeClient.getEpochTime()) * 1000;
-
+  
       JsonArray location = doc.createNestedArray("location");
       location.add(latitude);
       location.add(longitude);
@@ -117,5 +108,6 @@ void loop()
       client.publish(pub, buffer, n);
     }
   }
+  
   delay(4000);
 }
